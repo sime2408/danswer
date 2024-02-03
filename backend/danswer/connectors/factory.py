@@ -74,6 +74,7 @@ def identify_connector_class(
         DocumentSource.SHAREPOINT: SharepointConnector,
         DocumentSource.DISCOURSE: DiscourseConnector,
         DocumentSource.AXERO: AxeroConnector,
+        DocumentSource.XENFORO: XenforoConnector,
     }
     connector_by_source = connector_map.get(source, {})
 
