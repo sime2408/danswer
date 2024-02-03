@@ -99,7 +99,7 @@ const Main = () => {
               {jiraCredential.credential_json?.jira_api_token}
             </p>
             <button
-              className="ml-1 hover:bg-gray-700 rounded-full p-1"
+              className="ml-1 hover:bg-emphasis dark:hover:bg-emphasis-dark rounded-full p-1"
               onClick={async () => {
                 if (jiraConnectorIndexingStatuses.length > 0) {
                   setPopup({

@@ -115,7 +115,7 @@ export function ChatIntro({
                     height="1520"
                   />
                 </div>
-                <div className="m-auto text-3xl font-bold text-strong mt-4 w-fit">
+                <div className="m-auto text-3xl font-bold text-strong dark:text-strong-dark mt-4 w-fit">
                   {selectedPersona?.name || "How can I help you today?"}
                 </div>
                 {selectedPersona && (
