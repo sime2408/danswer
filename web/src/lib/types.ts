@@ -40,6 +40,7 @@ export type ValidSources =
   | "sharepoint"
   | "zendesk"
   | "discourse"
+  | "xenforo"
   | "axero";
 
 export type ValidInputTypes = "load_state" | "poll" | "event";
