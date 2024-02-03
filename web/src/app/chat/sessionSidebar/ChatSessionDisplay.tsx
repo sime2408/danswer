@@ -124,7 +124,7 @@ export function ChatSessionDisplay({
                   className="-my-px px-1 mr-2 w-full rounded"
                 />
               ) : (
-                <p className="break-all overflow-hidden whitespace-nowrap mr-3 text-emphasis">
+                <p className="break-all overflow-hidden whitespace-nowrap mr-3 text-emphasis dark:text-gray-400">
                   {chatName || `Chat ${chatSession.id}`}
                 </p>
               )}
