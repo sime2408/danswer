@@ -47,7 +47,7 @@ const Main = () => {
                 <ConnectorForm<XenforoConfig>
                     nameBuilder={(values) => `XenforoConnector-${values.base_url}`}
                     ccPairNameBuilder={(values) => values.base_url}
-                    // Since there is no "real" credential associated with a web connector,
+                    // Since there is no "real" credential associated with a xenforo connector,
                     // we create a dummy one here so that we can associate the CC Pair with a
                     // user. This is needed since the user for a CC Pair is found via the credential
                     // associated with it.
@@ -58,7 +58,7 @@ const Main = () => {
                         <>
                             <TextFormField
                                 name="base_url"
-                                label="Forum URL to Index:"
+                                label="Forum board or thread URL to Index:"
                                 autoCompleteDisabled={false}
                             />
                         </>
@@ -66,10 +66,10 @@ const Main = () => {
                     validationSchema={Yup.object().shape({
                         base_url: Yup.string().required(
                             "Please enter the forum URL to scrape e.g. https://my.web.site/forum/boards/my-board/"
-                        ),
+                        )
                     })}
                     initialValues={{
-                        base_url: "",
+                        base_url: ""
                     }}
                     refreshFreq={60 * 60 * 24} // 1 day
                 />

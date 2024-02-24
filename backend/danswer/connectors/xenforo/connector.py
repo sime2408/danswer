@@ -11,7 +11,7 @@ The `load_from_state` method is used to load documents from the forum. It takes 
 can be used to specify a state from which to start loading documents.
 """
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from urllib.parse import urlparse
 
@@ -27,6 +27,7 @@ from danswer.connectors.models import Document
 from danswer.connectors.models import Section
 from danswer.utils.logger import setup_logger
 
+from backend.danswer.connectors.cross_connector_utils.miscellaneous_utils import datetime_to_utc
 
 logger = setup_logger()
 
@@ -58,6 +59,22 @@ def get_title(soup):
     return title
 
 
+def get_threads(self, url):
+    soup = requestsite(self, url)
+    thread_tags = soup.find_all(class_="structItem-title")
+    base_url = "{uri.scheme}://{uri.netloc}".format(uri=urlparse(url))
+    threads = []
+    for x in thread_tags:
+        y = x.find_all(href=True)
+        for element in y:
+            link = element["href"]
+            if "threads/" in link:
+                stripped = link[0: link.rfind("/") + 1]
+                if base_url + stripped not in threads:
+                    threads.append(base_url + stripped)
+    return threads
+
+
 def get_pages(soup, url):
     page_tags = soup.select("li.pageNav-page")
     page_numbers = []
@@ -79,53 +96,42 @@ def get_pages(soup, url):
 def parse_post_date(post_element: BeautifulSoup):
     date_string = post_element.find('time')['datetime']
     post_date = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S%z')
-    return post_date
+    return datetime_to_utc(post_date)
 
 
-def scrape_page_posts(soup, url, last_run_date) -> list:
+def scrape_page_posts(soup, url, initial_run, start_time) -> list:
     title = get_title(soup)
+
     documents = []
-    for post in soup.find_all("div", class_="message-main"):
+    for post in soup.find_all("div", class_="message-inner"):
         post_date = parse_post_date(post)
-        if XenforoConnector.initial_run or post_date > last_run_date:
-            # Process all posts if it's the initial run, otherwise only newer than the last run date
-            post_text = post.get_text() + "\n"
+        if initial_run or post_date > start_time:
+            post_text = post.find("div", class_="bbWrapper").get_text(strip=True) + "\n"
+            author = post.find("div", class_="message-name").get_text(strip=True)
             document = Document(
-                id=f"{DocumentSource.XENFORO.value}:{title}",
+                id=f"{DocumentSource.XENFORO.value}__{title}",
                 sections=[Section(link=url, text=post_text)],
                 title=title,
                 text=post_text,
                 source=DocumentSource.WEB,
                 semantic_identifier=title,
-                metadata={"type": "post"},
+                primary_owners=author,
+                metadata={"type": "post", "author": author, "time": post_date},
+                doc_updated_at=post_date,
             )
             documents.append(document)
     return documents
 
 
-def get_threads(self, url):
-    soup = requestsite(self, url)
-    thread_tags = soup.find_all(class_="structItem-title")
-    base_url = "{uri.scheme}://{uri.netloc}".format(uri=urlparse(url))
-    threads = []
-    for x in thread_tags:
-        y = x.find_all(href=True)
-        for element in y:
-            link = element["href"]
-            if "threads/" in link:
-                stripped = link[0: link.rfind("/") + 1]
-                if base_url + stripped not in threads:
-                    threads.append(base_url + stripped)
-    return threads
-
-
 class XenforoConnector(LoadConnector):
-    # track the initial run
-    initial_run = True
+
+    # Class variable to track if the connector has been run before
+    has_been_run_before = False
 
     def __init__(self, base_url: str) -> None:
         self.base_url = base_url
-        self.last_run_date = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(days=1)
+        self.initial_run = not XenforoConnector.has_been_run_before
+        self.start = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(days=1)
         self.cookies = {}
         # mimic user browser to avoid being blocked by the website (see: https://www.useragents.me/)
         self.headers = {
@@ -138,12 +144,13 @@ class XenforoConnector(LoadConnector):
         return None
 
     def load_from_state(self) -> GenerateDocumentsOutput:
+
         # Standardize URL to always end in /.
         if self.base_url[-1] != "/":
             self.base_url += "/"
 
         # Remove all extra parameters from the end such as page, post.
-        matches = ("threads/", "boards/")
+        matches = ("threads/", "boards/", "forums/")
         for each in matches:
             if each in self.base_url:
                 try:
@@ -152,9 +159,10 @@ class XenforoConnector(LoadConnector):
                     pass
 
         doc_batch: list[Document] = []
-        # Input is a forum thread_list_page, find all threads in this thread_list_page and scrape them.
-        if "boards/" or "forums/" in self.base_url:
-            all_threads = []
+        all_threads = []
+
+        # If the URL contains "boards/" or "forums/", find all threads.
+        if "boards/" in self.base_url or "forums/" in self.base_url:
             pages = get_pages(requestsite(self, self.base_url), self.base_url)
 
             # Get all pages on thread_list_page
@@ -163,38 +171,33 @@ class XenforoConnector(LoadConnector):
                     f"\x1b[KGetting pages from thread_list_page.. Current: {pre_count}/{len(pages)}\r"
                 )
                 all_threads += get_threads(self, thread_list_page)
+        # If the URL contains "threads/", add the thread to the list.
+        elif "threads/" in self.base_url:
+            all_threads.append(self.base_url)
 
-            # Getting all threads from thread_list_page pages
-            for thread_count, thread in enumerate(all_threads, start=1):
-                soup = requestsite(self, thread)
-                pages = get_pages(soup, thread)
-                # Getting all pages for all threads
-                for page_count, page in enumerate(pages, start=1):
-                    logger.info(
-                        f"\x1b[KProgress: Page {page_count}/{len(pages)} - Thread {thread_count}/{len(all_threads)}\r"
-                    )
-                    doc_batch.extend(scrape_page_posts(requestsite(self, page), thread, self.last_run_date))
-                XenforoConnector.initial_run = False
-                yield doc_batch
-        # If the URL contains "threads/", scrape the thread
-        if "threads/" in self.base_url:
-            soup = requestsite(self, self.base_url)
+        # Process all threads
+        for thread_count, thread_url in enumerate(all_threads, start=1):
+            soup = requestsite(self, thread_url)
             if soup is None:
                 logger.error(f"Failed to load page: {self.base_url}")
-                yield doc_batch
-
-            pages = get_pages(soup, self.base_url)
+                continue
+            pages = get_pages(soup, thread_url)
+            # Getting all pages for all threads
             for page_count, page in enumerate(pages, start=1):
-                soup = requestsite(self, self.base_url + "page-" + str(page_count))
-                if soup is None:
-                    logger.error(
-                        f"Failed to load page: {self.base_url + 'page-' + str(page_count)}"
-                    )
-                    continue
-
-                doc_batch.extend(scrape_page_posts(soup, page, self.last_run_date))
-                XenforoConnector.initial_run = False
+                logger.info(f"Visiting {page}")
+                logger.info(
+                    f"\x1b[KProgress: Page {page_count}/{len(pages)} - Thread {thread_count}/{len(all_threads)}\r"
+                )
+                soup_url = requestsite(self, page)
+                doc_batch.extend(scrape_page_posts(soup_url, thread_url, self.initial_run, self.start))
+            if doc_batch:
                 yield doc_batch
-        # If there are any documents to yield after the initial run, do so
-        if doc_batch:
-            yield doc_batch
+
+        # Mark the initial run finished after all threads and pages have been processed
+        XenforoConnector.has_been_run_before = True
+
+
+if __name__ == "__main__":
+    connector = XenforoConnector(base_url="https://cassiopaea.org/forum/threads/how-to-change-your-emotional-state.41381/")
+    document_batches = connector.load_from_state()
+    print(next(document_batches))
