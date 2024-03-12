@@ -1,0 +1,31 @@
+
+
+// NextJS Material Dashboard 2 PRO base styles
+import colors from "/assets/theme/base/colors";
+import borders from "/assets/theme/base/borders";
+import boxShadows from "/assets/theme/base/boxShadows";
+
+// NextJS Material Dashboard 2 PRO helper functions
+import pxToRem from "/assets/theme/functions/pxToRem";
+import linearGradient from "/assets/theme/functions/linearGradient";
+
+const { transparent, gradients } = colors;
+const { borderRadius } = borders;
+const { colored } = boxShadows;
+
+const stepper = {
+  styleOverrides: {
+    root: {
+      background: linearGradient(gradients.dark.main, gradients.dark.state),
+      padding: `${pxToRem(24)} 0 ${pxToRem(16)}`,
+      borderRadius: borderRadius.lg,
+      boxShadow: colored.dark,
+
+      "&.MuiPaper-root": {
+        backgroundColor: transparent.main,
+      },
+    },
+  },
+};
+
+export default stepper;

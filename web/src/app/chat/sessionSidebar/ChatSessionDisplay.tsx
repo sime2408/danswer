@@ -197,10 +197,10 @@ export function ChatSessionDisplay({
                 ))}
             </div>
             {isSelected && !isRenamingChat && !delayedSkipGradient && (
-              <div className="absolute bottom-0 right-0 top-0 bg-gradient-to-l to-transparent from-hover w-20 from-60% rounded" />
+              <div className="absolute bottom-0 right-0 top-0 bg-gradient-to-l to-transparent from-hover dark:from-dark-tremor-background-muted w-20 from-60% rounded" />
             )}
             {!isSelected && !delayedSkipGradient && (
-              <div className="absolute bottom-0 right-0 top-0 bg-gradient-to-l to-transparent from-background w-8 from-0% rounded" />
+              <div className="absolute bottom-0 right-0 top-0 bg-gradient-to-l to-transparent from-background dark:from-dark-tremor-background-muted w-8 from-0% rounded" />
             )}
           </>
         </BasicSelectable>
