@@ -20,7 +20,7 @@ function HelperItemDisplay({
   description: string;
 }) {
   return (
-    <div className="cursor-pointer hover:bg-hover-light border border-border rounded py-2 px-4">
+    <div className="cursor-pointer hover:bg-hover-light dark:hover:bg-hover-dark border border-border dark:border-neutral-900 rounded py-2 px-4">
       <div className="text-emphasis font-bold text-lg flex">{title}</div>
       <div className="text-sm">{description}</div>
     </div>
@@ -221,7 +221,7 @@ export function ChatIntro({
                 <div className="mt-4 flex">
                   <div
                     onClick={() => setIsAllPersonaOptionVisible(true)}
-                    className="text-sm flex mx-auto p-1 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded cursor-default"
+                    className="text-sm flex mx-auto p-1 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded cursor-default hover:cursor-pointer"
                   >
                     <FiZoomIn className="my-auto mr-1" /> See more
                   </div>

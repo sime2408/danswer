@@ -263,7 +263,7 @@ export const ChatSidebar = ({
                 <p className="my-auto">
                   {user ? user.email : "Anonymous Possum"}
                 </p>
-                <FiMoreHorizontal className="my-auto ml-auto mr-2" size={20} />
+                <FiMoreHorizontal className="my-auto ml-auto mr-2 hover:cursor-pointer" size={20} />
               </div>
             </BasicSelectable>
           </div>
