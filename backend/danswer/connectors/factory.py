@@ -34,6 +34,7 @@ from danswer.connectors.slack.load_connector import SlackLoadConnector
 from danswer.connectors.web.connector import WebConnector
 from danswer.connectors.zendesk.connector import ZendeskConnector
 from danswer.connectors.zulip.connector import ZulipConnector
+from danswer.connectors.xenforo.connector import XenforoConnector
 
 
 class ConnectorMissingException(Exception):
