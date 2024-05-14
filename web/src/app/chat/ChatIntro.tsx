@@ -9,6 +9,7 @@ import { Modal } from "@/components/Modal";
 import { useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import { SourceMetadata } from "@/lib/search/interfaces";
+import {useTheme} from "@/app/ThemeContext";
 
 const MAX_PERSONAS_TO_DISPLAY = 4;
 
@@ -93,6 +94,9 @@ export function ChatIntro({
 
   const availableSourceMetadata = getSourceMetadataForSources(availableSources);
 
+  const { theme } = useTheme();
+  const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
+
   return (
     <>
       {isAllPersonaOptionVisible && (
@@ -109,7 +113,7 @@ export function ChatIntro({
               <div className="mx-auto">
                 <div className="m-auto h-[80px] w-[80px]">
                   <Image
-                    src="/logo.png"
+                    src={logoSrc}
                     alt="Logo"
                     width="1419"
                     height="1520"
@@ -190,7 +194,7 @@ export function ChatIntro({
           <div className="px-12 w-searchbar-xs 2xl:w-searchbar-sm 3xl:w-searchbar">
             <div className="mx-auto">
               <div className="m-auto h-[80px] w-[80px]">
-                <Image src="/logo.png" alt="Logo" width="1419" height="1520" />
+                <Image src={logoSrc} alt="Logo" width="1419" height="1520" />
               </div>
             </div>
 

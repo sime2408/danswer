@@ -25,7 +25,7 @@ import {
   SlackIcon,
   ZendeskIcon,
   ZulipIcon,
-  XenforoIcon,
+  XenforoIcon, AdcubumIcon,
 } from "@/components/icons/icons";
 import { ValidSources } from "./types";
 import { SourceCategory, SourceMetadata } from "./search/interfaces";
@@ -177,6 +177,11 @@ const SOURCE_METADATA_MAP: SourceMap = {
     displayName: "Xenforo",
     category: SourceCategory.ImportedKnowledge,
   },
+  adcubum: {
+    icon: AdcubumIcon,
+    displayName: "Adcubum",
+    category: SourceCategory.ImportedKnowledge,
+  }
 };
 
 function fillSourceMetadata(

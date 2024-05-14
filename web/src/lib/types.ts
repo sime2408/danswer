@@ -15,6 +15,7 @@ export interface MinimalUserSnapshot {
 }
 
 export type ValidSources =
+  | "adcubum"
   | "web"
   | "github"
   | "gitlab"
@@ -179,6 +180,10 @@ export interface GoogleSitesConfig {
 }
 
 export interface ZendeskConfig {}
+
+export interface XenforoConfig {
+  base_url: string;
+}
 
 export interface IndexAttemptSnapshot {
   id: number;

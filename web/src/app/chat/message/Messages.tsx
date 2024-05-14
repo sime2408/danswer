@@ -94,7 +94,7 @@ export const AIMessage = ({
             </div>
 
             <div className="font-bold text-emphasis dark:text-gray-400 ml-2 my-auto">
-              {personaName || "Danswer"}
+              {personaName || "Adcubum"}
             </div>
 
             {query === undefined &&

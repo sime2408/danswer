@@ -9,6 +9,7 @@ import { HealthCheckBanner } from "@/components/health/healthcheck";
 import { User } from "@/lib/types";
 import { Text } from "@tremor/react";
 import { RequestNewVerificationEmail } from "./RequestNewVerificationEmail";
+import {useTheme} from "@/app/ThemeContext";
 
 export default async function Page() {
   // catch cases where the backend is completely unreachable here
@@ -36,6 +37,9 @@ export default async function Page() {
     return redirect("/");
   }
 
+  const { theme } = useTheme();
+  const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
+
   return (
     <main>
       <div className="absolute top-10x w-full">
@@ -44,7 +48,7 @@ export default async function Page() {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div>
           <div className="h-16 w-16 mx-auto">
-            <Image src="/logo.png" alt="Logo" width="1419" height="1520" />
+            <Image src={logoSrc} alt="Logo" width="1419" height="1520" />
           </div>
 
           <div className="flex">

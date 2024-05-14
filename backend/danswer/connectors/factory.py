@@ -2,6 +2,7 @@ from typing import Any
 from typing import Type
 
 from danswer.configs.constants import DocumentSource
+from danswer.connectors.adcubum.connector import AdcubumConnector
 from danswer.connectors.axero.connector import AxeroConnector
 from danswer.connectors.bookstack.connector import BookstackConnector
 from danswer.connectors.confluence.connector import ConfluenceConnector
@@ -46,6 +47,7 @@ def identify_connector_class(
     input_type: InputType | None = None,
 ) -> Type[BaseConnector]:
     connector_map = {
+        DocumentSource.ADCUBUM: AdcubumConnector,
         DocumentSource.WEB: WebConnector,
         DocumentSource.FILE: LocalFileConnector,
         DocumentSource.SLACK: {

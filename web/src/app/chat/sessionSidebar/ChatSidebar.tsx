@@ -62,7 +62,7 @@ export const ChatSidebar = ({
       <div
         className={
           "font-bold p-1 rounded-lg hover:bg-hover cursor-pointer " +
-          (openTab === tab ? "bg-hover" : "")
+          (openTab === tab ? "bg-hover dark:bg-background-strong-dark " : "")
         }
         onClick={() => {
           setOpenTab(tab);
@@ -223,14 +223,14 @@ export const ChatSidebar = ({
                   className="flex py-3 px-4 cursor-pointer hover:bg-hover dark:hover:bg-neutral-800"
                 >
                   <FiSearch className="my-auto mr-2" />
-                  Danswer Search
+                  Adcubum Search
                 </Link>
                 <Link
                   href="/chat"
                   className="flex py-3 px-4 cursor-pointer hover:bg-hover dark:hover:bg-neutral-800"
                 >
                   <FiMessageSquare className="my-auto mr-2" />
-                  Danswer Chat
+                  Adcubum Chat
                 </Link>
                 {(!user || user.role === "admin") && (
                   <Link

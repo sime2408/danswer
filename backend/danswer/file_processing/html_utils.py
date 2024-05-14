@@ -2,8 +2,10 @@ import re
 from copy import copy
 from dataclasses import dataclass
 from typing import IO
+from markdownify import markdownify as md
 
 import bs4
+from playwright.sync_api import Page
 
 from danswer.configs.app_configs import WEB_CONNECTOR_IGNORED_CLASSES
 from danswer.configs.app_configs import WEB_CONNECTOR_IGNORED_ELEMENTS
@@ -33,7 +35,7 @@ def strip_newlines(document: str) -> str:
 
 
 def format_document_soup(
-    document: bs4.BeautifulSoup, table_cell_separator: str = "\t"
+    document: bs4.BeautifulSoup, table_cell_separator: str = "\t", page: Page = None
 ) -> str:
     """Format html to a flat text document.
 
@@ -116,18 +118,36 @@ def format_document_soup(
             elif e.name == "pre":
                 if verbatim_output <= 0:
                     verbatim_output = len(list(e.childGenerator()))
+            elif e.name == "iframe":
+                if page:
+                    text = extract_iframe_content(text, page)
+
     return strip_excessive_newlines_and_spaces(text)
 
 
-def parse_html_page_basic(text: str | IO[bytes]) -> str:
+def extract_iframe_content(text: str, page: Page) -> str:
+    """Extract content from the last iframe since the first one is navigation."""
+    frame = page.frames[-1]
+    if hasattr(frame, "name") or hasattr(frame, "id"):
+        frame_content = frame.content()
+        iframe_soup = bs4.BeautifulSoup(frame_content, "html.parser")
+        body_tag = iframe_soup.find('body')
+        if body_tag:
+            text += "\n"
+            text += md(str(body_tag))
+    return text
+
+
+def parse_html_page_basic(text: str | IO[bytes], page: Page) -> str:
     soup = bs4.BeautifulSoup(text, "html.parser")
-    return format_document_soup(soup)
+    return format_document_soup(soup, page=page)
 
 
 def web_html_cleanup(
     page_content: str | bs4.BeautifulSoup,
     mintlify_cleanup_enabled: bool = True,
     additional_element_types_to_discard: list[str] | None = None,
+    page: Page = None
 ) -> ParsedHTML:
     if isinstance(page_content, str):
         soup = bs4.BeautifulSoup(page_content, "html.parser")
@@ -160,6 +180,6 @@ def web_html_cleanup(
             [tag.extract() for tag in soup.find_all(undesired_tag)]
 
     # 200B is ZeroWidthSpace which we don't care for
-    page_text = format_document_soup(soup).replace("\u200B", "")
+    page_text = format_document_soup(soup, page=page).replace("\u200B", "")
 
     return ParsedHTML(title=title, cleaned_text=page_text)

@@ -40,6 +40,7 @@ import {
 } from "react-icons/fi";
 import { SiBookstack } from "react-icons/si";
 import Image from "next/image";
+import adcubumIcon from "../../../public/Adcubum.svg";
 import jiraSVG from "../../../public/Jira.svg";
 import confluenceSVG from "../../../public/Confluence.svg";
 import guruIcon from "../../../public/Guru.svg";
@@ -637,6 +638,20 @@ export const XenforoIcon = ({
       className={`w-[${size}px] h-[${size}px] ` + className}
     >
       <Image src={xenforoIcon} alt="Logo" width="96" height="96" />
+    </div>
+  );
+};
+
+export const AdcubumIcon = ({
+  size = 16,
+  className = defaultTailwindCSS,
+}: IconProps) => {
+  return (
+    <div
+      style={{ width: `${size}px`, height: `${size}px` }}
+      className={`w-[${size}px] h-[${size}px] ` + className}
+    >
+      <Image src={adcubumIcon} alt="Logo" width="96" height="96" />
     </div>
   );
 };

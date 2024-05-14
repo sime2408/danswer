@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Text } from "@tremor/react";
 import { RequestNewVerificationEmail } from "../waiting-on-verification/RequestNewVerificationEmail";
 import { User } from "@/lib/types";
+import {useTheme} from "@/app/ThemeContext";
 
 export function Verify({ user }: { user: User | null }) {
   const searchParams = useSearchParams();
@@ -45,6 +46,9 @@ export function Verify({ user }: { user: User | null }) {
     verify();
   }, []);
 
+  const { theme } = useTheme();
+  const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
+
   return (
     <main>
       <div className="absolute top-10x w-full">
@@ -53,7 +57,7 @@ export function Verify({ user }: { user: User | null }) {
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div>
           <div className="h-16 w-16 mx-auto animate-pulse">
-            <Image src="/logo.png" alt="Logo" width="1419" height="1520" />
+            <Image src={logoSrc} alt="Logo" width="1419" height="1520" />
           </div>
 
           {!error ? (

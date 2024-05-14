@@ -69,6 +69,7 @@ UNNAMED_KEY_PLACEHOLDER = "Unnamed"
 
 class DocumentSource(str, Enum):
     # Special case, document passed in via Danswer APIs without specifying a source type
+    ADCUBUM = "adcubum"
     INGESTION_API = "ingestion_api"
     SLACK = "slack"
     WEB = "web"
