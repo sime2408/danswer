@@ -68,7 +68,7 @@ export default function Adcubum() {
           // user. This is needed since the user for a CC Pair is found via the credential
           // associated with it.
           shouldCreateEmptyCredentialForConnector={true}
-          source="web"
+          source="adcubum"
           inputType="load_state"
           formBody={
             <>
