@@ -13,6 +13,7 @@ import Link from "next/link";
 import {useTheme} from "@/app/ThemeContext";
 
 const Page = async () => {
+  const { theme } = useTheme();
   // catch cases where the backend is completely unreachable here
   // without try / catch, will just raise an exception and the page
   // will not render
@@ -45,7 +46,6 @@ const Page = async () => {
     return redirect("/");
   }
 
-  const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
 
   return (

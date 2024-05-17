@@ -10,6 +10,7 @@ import { User } from "@/lib/types";
 import {useTheme} from "@/app/ThemeContext";
 
 export function Verify({ user }: { user: User | null }) {
+  const { theme } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -46,7 +47,6 @@ export function Verify({ user }: { user: User | null }) {
     verify();
   }, []);
 
-  const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
 
   return (

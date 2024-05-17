@@ -12,6 +12,7 @@ import { RequestNewVerificationEmail } from "./RequestNewVerificationEmail";
 import {useTheme} from "@/app/ThemeContext";
 
 export default async function Page() {
+  const { theme } = useTheme();
   // catch cases where the backend is completely unreachable here
   // without try / catch, will just raise an exception and the page
   // will not render
@@ -37,7 +38,6 @@ export default async function Page() {
     return redirect("/");
   }
 
-  const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
 
   return (

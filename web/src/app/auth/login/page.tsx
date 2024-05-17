@@ -19,6 +19,7 @@ const Page = async ({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
+  const { theme } = useTheme();
   const autoRedirectDisabled = searchParams?.disableAutoRedirect === "true";
 
   // catch cases where the backend is completely unreachable here
@@ -63,7 +64,6 @@ const Page = async ({
     return redirect(authUrl);
   }
 
-  const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
 
   return (

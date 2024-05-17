@@ -89,12 +89,12 @@ export function ChatIntro({
   selectedPersona?: Persona;
   handlePersonaSelect: (persona: Persona) => void;
 }) {
+  const { theme } = useTheme();
   const [isAllPersonaOptionVisible, setIsAllPersonaOptionVisible] =
     useState(false);
 
   const availableSourceMetadata = getSourceMetadataForSources(availableSources);
 
-  const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/logo-dark.png' : '/logo.png';
 
   return (
